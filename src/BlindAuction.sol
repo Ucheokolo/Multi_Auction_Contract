@@ -2,7 +2,9 @@
 pragma solidity ^0.8.9;
 
 import "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
-import "lib/forge-std/src/Vm.sol";
+import "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
+
+// import "lib/forge-std/src/Vm.sol";
 
 contract BlindAuction {
     address owner;
@@ -47,6 +49,12 @@ contract BlindAuction {
 
     constructor() {
         owner = msg.sender;
+    }
+
+    function uniqueAuction(
+        uint _auctionID
+    ) public view returns (AuctionDetails memory details) {
+        details = uniqueAuctionSummary[_auctionID];
     }
 
     function createAuction(
