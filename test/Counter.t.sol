@@ -34,19 +34,65 @@ contract Auctionn is Test {
         vm.stopPrank();
     }
 
-    function testReateAuction() public {
+    function testCreateAuction() public {
         testMintNFt();
         vm.deal(auctioner1, 100 ether);
         vm.deal(auctioner2, 100 ether);
         vm.startPrank(auctioner1);
         mockNFT.approve(address(auctionF), 0);
-        auctionF.createAuction{value: 0.02 ether}(address(mockNFT), "Dykes", 0);
+        auctionF.createAuction{value: 0.02 ether}(
+            address(mockNFT),
+            "Aitch5",
+            0
+        );
         vm.stopPrank();
 
         vm.startPrank(auctioner2);
         mockNFT.approve(address(auctionF), 1);
-        auctionF.createAuction{value: 0.02 ether}(address(mockNFT), "Dykes", 1);
+        auctionF.createAuction{value: 0.02 ether}(
+            address(mockNFT),
+            "CarlsPro",
+            1
+        );
         vm.stopPrank();
+    }
+
+    function testPlaceBid() public {
+        testCreateAuction();
+        vm.deal(bidder1, 100 ether);
+        vm.deal(bidder2, 100 ether);
+        vm.deal(bidder3, 100 ether);
+
+        vm.startPrank(bidder1);
+        auctionF.BidForItem{value: 2 ether}(1);
+        auctionF.BidForItem{value: 2 ether}(2);
+        vm.stopPrank();
+
+        vm.startPrank(bidder2);
+        auctionF.BidForItem{value: 5 ether}(1);
+        auctionF.BidForItem{value: 6 ether}(2);
+        vm.stopPrank();
+
+        vm.startPrank(bidder3);
+        auctionF.BidForItem{value: 4 ether}(1);
+        auctionF.BidForItem{value: 9 ether}(2);
+        vm.stopPrank();
+
+        // vm.startPrank(bidder3);
+        // auctionF.BidForItem{value: 10 ether}(1);
+        // auctionF.BidForItem{value: 20 ether}(2);
+        // vm.stopPrank();
+    }
+
+    function testWinner() public {
+        testPlaceBid();
+        vm.warp(3 minutes);
+        vm.startPrank(owner);
+        auctionF.declareWinner(1);
+        auctionF.declareWinner(2);
+        vm.stopPrank();
+        auctionF.uniqueAuction(1);
+        auctionF.uniqueAuction(2);
     }
 
     function mkaddr(string memory name) public returns (address) {
